@@ -1,0 +1,348 @@
+/* Base */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.site-header {
+  background: #161b22;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #30363d;
+}
+
+.site-header .brand {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #58a6ff;
+}
+
+.site-header .nav a {
+  color: #c9d1d9;
+  margin: 0 0.8rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.site-header .nav a:hover {
+  color: #58a6ff;
+}
+
+.user-pill {
+  background: #21262d;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+}
+
+/* Container */
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: #0d1117;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  width: auto;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Optional darker variant to match employee form blocks */
+.card.card--dark,
+.form.card {
+  background: #161b22; /* ensure dark background */
+}
+
+.card h3 {
+  font-size: 0.8rem;
+  color: #8b949e;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #e6edf3;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  background: #161b22;
+  border-radius: 10px;
+  overflow: hidden;
+}
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+}
+th {
+  background: #21262d;
+  color: #58a6ff;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+td {
+  border-top: 1px solid #30363d;
+}
+tr:hover td {
+  background: #1c2128;
+}
+
+/* Buttons */
+.btn {
+  background: #238636;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.btn:hover {
+  background: #2ea043;
+}
+.btn-secondary {
+  background: #30363d;
+  color: #c9d1d9;
+}
+.btn-secondary:hover {
+  background: #484f58;
+}
+
+/* Footer */
+footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8b949e;
+  border-top: 1px solid #30363d;
+}
+
+/* Form */
+.form {
+  display: block;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 1000px; /* wider form */
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.form h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.form-row {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #c9d1d9;
+}
+
+.form-row input,
+.form-row select {
+  width: 90%;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  color: #e6edf3;
+  font-size: 0.95rem;
+  transition: border 0.2s, background 0.2s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: #58a6ff;
+  background: #0f141b;
+  outline: none;
+}
+
+/* Buttons */
+.form .btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.form .btn-secondary {
+  margin-left: 0.8rem;
+}
+
+/* Layout wrapper */
+.layout {
+  display: flex;
+  padding-left: 240px; /* offset fixed sidebar width */
+  background: #0d1117;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #161b22;
+  color: #e6edf3;
+  padding: 1rem;
+  flex-shrink: 0; /* don’t shrink */
+  position: fixed; /* stays on left */
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .brand {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #58a6ff;
+}
+
+.sidebar nav {
+  flex: 1;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 0.6rem 0.8rem;
+  color: #e6edf3;
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
+  transition: background 0.2s;
+}
+
+.sidebar nav a:hover {
+  background: #21262d;
+  color: #58a6ff;
+}
+
+.sidebar .logout {
+  margin-top: auto;
+  background: #ff6b6b;
+  text-align: center;
+  border-radius: 6px;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1; /* take all remaining space */
+  padding: 1.5rem;
+  background: #0d1117;
+  color: #c9d1d9;
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px; /* gutter between sidebar and content */
+  min-height: 100vh; /* allow footer to stick to bottom */
+}
+
+/* Dashboard heading */
+.main-content h1,
+.main-content h2 {
+  margin-top: 0; /* remove unwanted space */
+  margin-bottom: 1rem;
+}
+
+/* Dashboard cards grid */
+.dashboard-cards {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+/* Footer inside main should push to bottom */
+.main-content > footer {
+  margin-top: auto;
+}
+
+.dashboard-cards .card {
+  flex: 1;
+  background: #161b22;
+  padding: 1.2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-cards .card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #8b949e;
+}
+
+.dashboard-cards .card p {
+  margin: 0.5rem 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Table cleanup */
+.main-content table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #161b22;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.main-content th,
+.main-content td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.main-content th {
+  background: #21262d;
+  color: #58a6ff;
+  text-align: left;
+}
+
+.main-content tr:last-child td {
+  border-bottom: none;
+}
