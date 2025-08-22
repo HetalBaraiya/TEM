@@ -34,20 +34,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 include __DIR__ . '/partials/header.php';
 ?>
-<div class="grid">
-  <div class="card">
-    <h2>Sign Up</h2>
-    <?php if($msg): ?><p style="color:#ffb3b3;"><?php echo esc($msg); ?></p><?php endif; ?>
-    <?php if($ok): ?><p style="color:#b3ffcc;"><?php echo esc($ok); ?></p><?php endif; ?>
-    <form method="post" class="form">
-      <div class="form-row"><label>Full Name*</label><input type="text" name="full_name" required></div>
-      <div class="form-row"><label>Email*</label><input type="email" name="email" required></div>
-      <div class="form-row"><label>Password*</label><input type="password" name="password" required></div>
-      <div class="form-row"><label>Department</label><input type="text" name="department"></div>
-      <div class="form-row"><label>Phone</label><input type="text" name="phone"></div>
-      <div class="form-row"><label>Role</label><select name="role"><option value="employee">Employee</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
-      <button class="btn" type="submit">Create account</button>
-    </form>
+<div class="container">
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="signup-header">
+        <h1>Create Account</h1>
+        <p>Join our team and start managing tasks efficiently</p>
+      </div>
+      
+      <?php if($msg): ?>
+        <div class="alert alert-error"><?php echo esc($msg); ?></div>
+      <?php endif; ?>
+      
+      <?php if($ok): ?>
+        <div class="alert alert-success"><?php echo esc($ok); ?></div>
+      <?php endif; ?>
+      
+      <form method="post" class="signup-form">
+        <div class="form-row">
+          <label for="full_name">Full Name*</label>
+          <input type="text" id="full_name" name="full_name" required placeholder="Enter your full name">
+        </div>
+        
+        <div class="form-row">
+          <label for="email">Email Address*</label>
+          <input type="email" id="email" name="email" required placeholder="Enter your email">
+        </div>
+        
+        <div class="form-row">
+          <label for="password">Password*</label>
+          <input type="password" id="password" name="password" required placeholder="Create a password">
+        </div>
+        
+        <div class="form-row">
+          <label for="department">Department</label>
+          <input type="text" id="department" name="department" placeholder="Enter your department">
+        </div>
+        
+        <div class="form-row">
+          <label for="phone">Phone</label>
+          <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
+        </div>
+        
+        <div class="form-row">
+          <label for="role">Role</label>
+          <select id="role" name="role">
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary">Create Account</button>
+          <a href="index.php" class="btn btn-secondary">Back to Login</a>
+        </div>
+      </form>
+      
+      <div class="signup-footer">
+        <p>Already have an account? <a href="index.php">Sign in here</a></p>
+      </div>
+    </div>
   </div>
 </div>
 <?php include __DIR__ . '/partials/footer.php'; ?>

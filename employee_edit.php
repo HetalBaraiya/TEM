@@ -87,7 +87,7 @@ include __DIR__ . '/partials/header.php';
       </ul>
     </div>
   <?php endif; ?>
-  <form id="employee-form" method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
+  <form method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
     <div class="form-row two">
       <div><label>Full Name</label><input name="full_name" required value="<?php echo esc($employee['full_name']); ?>"></div>
       <div><label>Email</label><input type="email" name="email" required value="<?php echo esc($employee['email']); ?>"></div>

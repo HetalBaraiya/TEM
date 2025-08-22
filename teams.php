@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
-require_role(['manager']); // only managers can manage teams
+require_role(['manager','admin']); // allow managers and admins
 
 $editing = false;
 $editRow = null;
@@ -84,64 +84,79 @@ $q = $mysqli->query("
 include __DIR__ . '/partials/header.php';
 ?>
 
-<div class="grid">
-  <div class="card">
-    <h2><?php echo $editing ? 'Edit Team' : 'Create Team'; ?></h2>
-    <form method="post" class="form">
-      <input type="hidden" name="id" value="<?php echo (int)($editRow['id'] ?? 0); ?>">
-      <div class="form-row">
-        <label>Team Name</label>
-        <input name="team_name" required value="<?php echo esc($editRow['name'] ?? ''); ?>">
-      </div>
-      <div class="form-row">
-        <label>Select Employees (Ctrl/Cmd + Click for multiple)</label>
-        <select name="user_ids[]" multiple size="6" required>
-          <?php
-          $employees = $mysqli->query("SELECT id, full_name FROM users WHERE role='employee' ORDER BY full_name ASC");
-          while ($e = $employees->fetch_assoc()):
-          ?>
-            <option value="<?php echo (int)$e['id']; ?>"
-              <?php echo (isset($editMembers) && in_array($e['id'], $editMembers)) ? 'selected' : ''; ?>>
-              <?php echo esc($e['full_name']); ?>
-            </option>
-          <?php endwhile; ?>
-        </select>
-      </div>
-      <button class="btn" type="submit"><?php echo $editing ? 'Update Team' : 'Create Team'; ?></button>
-    </form>
-  </div>
+<div class="container">
+  <h1>Teams</h1>
+  <a class="btn-add" href="teams.php">Create Team</a>
 
-  <div class="card">
-    <h2>My Teams</h2>
-    <table>
-      <tr><th>Team</th><th>Created At</th><th>Members</th><th>Actions</th></tr>
-      <?php while ($t = $q->fetch_assoc()): ?>
-        <tr>
-          <td><?php echo esc($t['name']); ?></td>
-          <td><?php echo esc($t['created_at']); ?></td>
-          <td>
-            
+  <div class="grid">
+    <div class="card">
+      <h2><?php echo $editing ? 'Edit Team' : 'Create Team'; ?></h2>
+      <form method="post" class="form">
+        <input type="hidden" name="id" value="<?php echo (int)($editRow['id'] ?? 0); ?>">
+        <div class="form-row">
+          <label>Team Name</label>
+          <input name="team_name" required value="<?php echo esc($editRow['name'] ?? ''); ?>">
+        </div>
+        <div class="form-row">
+          <label>Select Employees</label>
+          <div class="checkbox-group">
             <?php
-            $tm = $mysqli->query("
-              SELECT u.full_name 
-              FROM team_members tm 
-              JOIN users u ON u.id = tm.user_id 
-              WHERE tm.team_id = " . (int)$t['id']
-            );
-            $names = [];
-            while ($m = $tm->fetch_assoc()) {
-              $names[] = esc($m['full_name']);
-            }
-            echo implode(', ', $names);
+            $employees = $mysqli->query("SELECT id, full_name FROM users WHERE role='employee' ORDER BY full_name ASC");
+            while ($e = $employees->fetch_assoc()):
             ?>
-          </td>
-          <td>
-            <a class="btn" href="teams.php?edit=<?php echo (int)$t['id']; ?>">Edit</a>
-            <a class="btn" href="teams.php?del=<?php echo (int)$t['id']; ?>" onclick="return confirm('Delete this team?')">Delete</a>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-    </table>
+              <div class="checkbox-item">
+                <input type="checkbox" name="user_ids[]" value="<?php echo (int)$e['id']; ?>" 
+                       id="emp_<?php echo (int)$e['id']; ?>"
+                       <?php echo (isset($editMembers) && in_array($e['id'], $editMembers)) ? 'checked' : ''; ?>>
+                <label for="emp_<?php echo (int)$e['id']; ?>"><?php echo esc($e['full_name']); ?></label>
+              </div>
+            <?php endwhile; ?>
+          </div>
+        </div>
+        <button class="btn" type="submit"><?php echo $editing ? 'Update Team' : 'Create Team'; ?></button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>My Teams</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Created At</th>
+            <th>Members</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php while ($t = $q->fetch_assoc()): ?>
+            <tr>
+              <td><?php echo esc($t['name']); ?></td>
+              <td><?php echo esc($t['created_at']); ?></td>
+              <td>
+                <?php
+                $tm = $mysqli->query("
+                  SELECT u.full_name 
+                  FROM team_members tm 
+                  JOIN users u ON u.id = tm.user_id 
+                  WHERE tm.team_id = " . (int)$t['id']
+                );
+                $names = [];
+                while ($m = $tm->fetch_assoc()) {
+                  $names[] = esc($m['full_name']);
+                }
+                echo implode(', ', $names);
+                ?>
+              </td>
+              <td>
+                <a class="btn" href="teams.php?edit=<?php echo (int)$t['id']; ?>">Edit</a>
+                <a class="btn" href="teams.php?del=<?php echo (int)$t['id']; ?>" onclick="return confirm('Delete this team?')">Delete</a>
+              </td>
+            </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

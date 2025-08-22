@@ -14,7 +14,7 @@ include __DIR__ . '/partials/header.php';
 ?>
 <div class="container">
   <h1>Tasks</h1>
-  <a class="btn" href="task_add.php">+ Create Task</a>
+  <a class="btn-add" href="task_add.php">Create Task</a>
 
   <div class="card card--dark" style="margin-top: 2rem;">
     <h2>All Tasks</h2>
@@ -57,8 +57,8 @@ include __DIR__ . '/partials/header.php';
             </td>
             <td><?php echo esc($r['creator_name'] ?? 'Unknown'); ?></td>
             <td>
-              <a href="task_edit.php?id=<?php echo (int)$r['id']; ?>" style="color:#58a6ff;">Edit</a> | 
-              <a href="tasks.php?del=<?php echo (int)$r['id']; ?>" onclick="return confirm('Delete this task?')" style="color:#ff6b6b;">Delete</a>
+              <a href="task_edit.php?id=<?php echo (int)$r['id']; ?>">Edit</a> | 
+              <a href="tasks.php?del=<?php echo (int)$r['id']; ?>" onclick="return confirm('Delete this task?')" style="color:#cc1f1a;">Delete</a>
             </td>
           </tr>
         <?php endwhile; ?>
@@ -66,5 +66,4 @@ include __DIR__ . '/partials/header.php';
     </table>
   </div>
 </div>
-
 <?php include __DIR__ . '/partials/footer.php'; ?>

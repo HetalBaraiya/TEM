@@ -2,9 +2,19 @@
 require_once __DIR__ . '/includes/auth.php';
 require_role(['admin','manager']);
 
+// Allowed dropdowns (same as edit_employee.php)
+$allowedDepartments = ['Software Development / Engineering'];
+$allowedJobTitles = [
+    'Software Engineer / Developer',
+    'Frontend / Backend Developer',
+    'Full Stack Developer',
+    'QA Engineer (Tester)'
+];
+
 // Validation + Create
 $errors = [];
 $old = ['full_name'=>'','email'=>'','department'=>'','job_title'=>'','phone'=>'','role'=>'employee'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['full_name'] = trim($_POST['full_name'] ?? '');
     $old['email'] = trim($_POST['email'] ?? '');
@@ -33,44 +43,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 
+    // Department validation
+    if ($old['department'] === '') {
+        $errors[] = 'Department is required.';
+    } elseif (!in_array($old['department'], $allowedDepartments, true)) {
+        $errors[] = 'Invalid department selected.';
+    }
+
+    // Job title validation
+    if ($old['job_title'] === '') {
+        $errors[] = 'Job title is required.';
+    } elseif (!in_array($old['job_title'], $allowedJobTitles, true)) {
+        $errors[] = 'Invalid job title selected.';
+    }
+
     // Phone validation (server-side)
     if ($old['phone'] !== '') {
         if (!preg_match('/^\+?[0-9\s\-\(\)]+$/', $old['phone'])) {
             $errors[] = 'Phone can contain digits, spaces, +, -, ().';
         }
         $digitsOnly = preg_replace('/\D+/', '', $old['phone']);
-        $digitsLen = strlen($digitsOnly);
-        if ($digitsLen < 7 || $digitsLen > 15) {
-            $errors[] = 'Phone must contain 7 to 15 digits.';
+        if (strlen($digitsOnly) !== 10) {
+            $errors[] = 'Phone must contain exactly 10 digits.';
         }
+    } else {
+        $errors[] = 'Phone is required.';
     }
 
-    // Optional field lengths
-    foreach ([['department',120], ['job_title',120], ['phone',30]] as [$field,$max]) {
-        if ($old[$field] !== '' && mb_strlen($old[$field]) > $max) {
-            $errors[] = ucfirst(str_replace('_',' ',$field)) . " must be at most {$max} characters.";
-        }
+    // Only Admin can create Admin users
+    if ($old['role'] === 'admin' && ($_SESSION['user']['role'] ?? '') !== 'admin') {
+        $errors[] = 'Only Admin users can create Admin accounts.';
     }
 
+    // Create user if no validation errors
+    if (empty($errors)) {
+        $defaultPassword = 'password123';
+        $passwordHash = password_hash($defaultPassword, PASSWORD_DEFAULT);
+        $status = 'active';
 
-    // If no errors, create the user
-    if (!$errors) {
-        // Hash the default password
-        $default_password = 'password123';
-        $password_hash = password_hash($default_password, PASSWORD_DEFAULT);
-        
-        // Insert the user into the database
-        $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, department, job_title, phone, role, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $old['full_name'], $old['email'], $old['department'], $old['job_title'], $old['phone'], $old['role'], $password_hash);
-        
+        $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, password_hash, department, job_title, phone, role, status) VALUES (?,?,?,?,?,?,?,?)");
+        $stmt->bind_param(
+            'ssssssss',
+            $old['full_name'],
+            $old['email'],
+            $passwordHash,
+            $old['department'],
+            $old['job_title'],
+            $old['phone'],
+            $old['role'],
+            $status
+        );
         if ($stmt->execute()) {
-            // Success - redirect to employees list
-            header("Location: employees.php");
+            header('Location: employees.php');
             exit;
         } else {
-            $errors[] = "Failed to create employee. Please try again.";
+            $errors[] = 'Failed to create user.';
         }
-        $stmt->close();
     }
 }
 
@@ -87,21 +115,53 @@ include __DIR__ . '/partials/header.php';
       </ul>
     </div>
   <?php endif; ?>
-  <form id="employee-form" method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
+  <form method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
     <div class="form-row two">
-      <div><label>Full Name</label><input name="full_name" required value="<?php echo esc($old['full_name']); ?>"></div>
-      <div><label>Email</label><input type="email" name="email" required value="<?php echo esc($old['email']); ?>"></div>
+      <div>
+        <label>Full Name</label>
+        <input name="full_name" required value="<?php echo esc($old['full_name']); ?>">
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" required value="<?php echo esc($old['email']); ?>">
+      </div>
     </div>
     <div class="form-row two">
-      <div><label>Department</label><input name="department" value="<?php echo esc($old['department']); ?>"></div>
-      <div><label>Job Title</label><input name="job_title" value="<?php echo esc($old['job_title']); ?>"></div>
+      <div>
+        <label>Department</label>
+        <select name="department" required>
+          <option value="">-- Select Department --</option>
+          <?php foreach ($allowedDepartments as $dep): ?>
+            <option value="<?php echo esc($dep); ?>" <?php if($old['department']===$dep) echo 'selected'; ?>>
+              <?php echo esc($dep); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div>
+        <label>Job Title</label>
+        <select name="job_title" required>
+          <option value="">-- Select Job Title --</option>
+          <?php foreach ($allowedJobTitles as $jt): ?>
+            <option value="<?php echo esc($jt); ?>" <?php if($old['job_title']===$jt) echo 'selected'; ?>>
+              <?php echo esc($jt); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
     </div>
     <div class="form-row two">
-      <div><label>Phone</label><input name="phone" value="<?php echo esc($old['phone']); ?>"></div>
-      <div><label>Role</label>
-        <select name="role">
-          <?php foreach(['employee'=>'Employee','manager'=>'Manager','admin'=>'Admin'] as $val=>$label): ?>
-            <option value="<?php echo $val; ?>" <?php if($old['role']===$val) echo 'selected'; ?>><?php echo $label; ?></option>
+      <div>
+        <label>Phone</label>
+        <input name="phone" required value="<?php echo esc($old['phone']); ?>">
+      </div>
+      <div>
+        <label>Role</label>
+        <select name="role" required>
+          <?php foreach(['employee','manager','admin'] as $r): ?>
+            <option value="<?php echo $r; ?>" <?php if($old['role']===$r) echo 'selected'; ?>>
+              <?php echo ucfirst($r); ?>
+            </option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -109,7 +169,6 @@ include __DIR__ . '/partials/header.php';
     <div style="margin-top:1.5rem;">
       <button class="btn" type="submit">Create</button>
       <a href="employees.php" class="btn btn-secondary">Cancel</a>
-      
     </div>
   </form>
 </div>

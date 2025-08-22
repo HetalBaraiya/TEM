@@ -2,6 +2,24 @@
 require_once __DIR__ . '/includes/auth.php';
 require_role(['admin','manager']);
 
+// Ensure esc() exists
+if (!function_exists('esc')) {
+    function esc($str){
+        return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+// Ensure create_notification() exists
+if (!function_exists('create_notification')) {
+    function create_notification($user_id, $message) {
+        global $mysqli;
+        $stmt = $mysqli->prepare("INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, NOW())");
+        $stmt->bind_param("is", $user_id, $message);
+        $stmt->execute();
+        $stmt->close();
+    }
+}
+
 $id = (int)($_GET['id'] ?? 0);
 $res = $mysqli->query("SELECT * FROM tasks WHERE id=$id");
 $task = $res ? $res->fetch_assoc() : null;
@@ -14,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start_date = $_POST['start_date'] ?? '';
     $due_date = $_POST['due_date'] ?? '';
     $status = $_POST['status'] ?? 'Pending';
-    
+
     // Validations
     if ($title === '' || mb_strlen($title) < 3 || mb_strlen($title) > 200) {
         $errors[] = 'Title must be between 3 and 200 characters.';
@@ -28,24 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($start_date && $due_date && $start_date > $due_date) {
         $errors[] = 'Start date cannot be after due date.';
     }
-    
-    // Check for unique task title (excluding current task)
+
     if (!$errors) {
-        $stmt = $mysqli->prepare("SELECT id FROM tasks WHERE title = ? AND id != ?");
-        $stmt->bind_param("si", $title, $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $errors[] = 'A task with this title already exists.';
-        }
-        $stmt->close();
-    }
-    
-    if (!$errors) {
+        // Update task
         $stmt = $mysqli->prepare("UPDATE tasks SET title=?, description=?, start_date=?, due_date=?, status=? WHERE id=?");
-        $stmt->bind_param("sssssi", $title,$description,$start_date,$due_date,$status,$id);
+        $stmt->bind_param("sssssi", $title, $description, $start_date, $due_date, $status, $id);
         $stmt->execute();
-        
+        $stmt->close();
+
         // Notify assigned employees about the task update
         $assigned_employees = $mysqli->query("SELECT user_id FROM task_assignments WHERE task_id = $id");
         while ($emp = $assigned_employees->fetch_assoc()) {
@@ -53,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = "Task '" . $title . "' has been updated";
             create_notification($emp_id, $msg);
         }
-        
+
         header("Location: tasks.php");
         exit;
     } else {
@@ -80,7 +88,7 @@ include __DIR__ . '/partials/header.php';
     </div>
   <?php endif; ?>
   
-  <form id="task-form" method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
+  <form method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
     <div class="form-row">
       <label>Title</label>
       <input name="title" required value="<?php echo esc($task['title']); ?>">

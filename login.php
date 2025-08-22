@@ -2,6 +2,9 @@
 require_once __DIR__ . '/includes/config.php';
 
 $msg = '';
+if (isset($_GET['expired'])) {
+    $msg = 'Your session expired. Please sign in again.';
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $pass  = $_POST['password'] ?? '';
@@ -24,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'role' => $row['role']
             ];
             if ($row['role'] === 'admin') {
-                header("Location: admin_dashboard.php");
+                header("Location: " . BASE_PATH . "admin_dashboard.php");
             } elseif ($row['role'] === 'manager') {
-                header("Location: manager_dashboard.php");
+                header("Location: " . BASE_PATH . "manager_dashboard.php");
             } else {
-                header("Location: employee_dashboard.php");
+                header("Location: " . BASE_PATH . "employee_dashboard.php");
             }
             exit;
         }
@@ -43,7 +46,7 @@ include __DIR__ . '/partials/header.php';
   <div class="card">
     <h2>Login</h2>
     <?php if($msg): ?>
-      <p style="color:#ffb3b3;"><?php echo htmlspecialchars($msg, ENT_QUOTES); ?></p>
+      <p style="color:#ffb3b3;">&bull; <?php echo htmlspecialchars($msg, ENT_QUOTES); ?></p>
     <?php endif; ?>
     <form method="post" class="form">
       <div class="form-row">
@@ -56,6 +59,9 @@ include __DIR__ . '/partials/header.php';
       </div>
       <button class="btn" type="submit">Sign in</button>
     </form>
+   <!-- <p style="margin-top:1rem;">
+      Don't have an account? <a href="<?php echo BASE_PATH; ?>signup.php" style="color:#58a6ff;">Create an account</a>
+    </p> -->
   </div>
 </div>
 <?php include __DIR__ . '/partials/footer.php'; ?>

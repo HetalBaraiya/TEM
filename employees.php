@@ -47,7 +47,7 @@ include __DIR__ . '/partials/header.php';
 ?>
 <div class="container">
   <h1>Employees</h1>
-  <a class="btn" href="employee_add.php">+ Add Employee</a>
+  <a class="btn-add" href="employee_add.php">Add Employee</a>
 
   <form method="get" class="form" style="margin-top:1rem;">
     <div class="form-row two">
@@ -98,8 +98,8 @@ include __DIR__ . '/partials/header.php';
           <td><?php echo esc($r['job_title']); ?></td>
           <td><?php echo esc($r['phone']); ?></td>
           <td>
-            <a href="employee_edit.php?id=<?php echo $r['id']; ?>" style="color:#58a6ff;">Edit</a> | 
-            <a href="employees.php?del=<?php echo $r['id']; ?>" onclick="return confirm('Delete this user?')" style="color:#ff6b6b;">Delete</a>
+            <a href="employee_edit.php?id=<?php echo $r['id']; ?>">Edit</a> | 
+            <a href="employees.php?del=<?php echo $r['id']; ?>" onclick="return confirm('Delete this user?')" style="color:#cc1f1a;">Delete</a>
           </td>
         </tr>
       <?php endwhile; ?>

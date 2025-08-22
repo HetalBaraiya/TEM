@@ -1,23 +1,50 @@
+// ================= Toast Notification =================
+function showToast(message, type = "success") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  // Show animation
+  setTimeout(() => toast.classList.add("show"), 100);
+
+  // Remove after 3s
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      if (toast.parentNode) container.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
+
+// ================= Confirm Prompts =================
 document.addEventListener("click", (e) => {
   if (e.target.matches("[data-confirm]")) {
-    if (!confirm(e.target.getAttribute("data-confirm"))) e.preventDefault();
+    if (!confirm(e.target.getAttribute("data-confirm"))) {
+      e.preventDefault();
+    }
   }
 });
 
-// Form validation
+// ================= Form Validation =================
 document.addEventListener("submit", (e) => {
   const form = e.target;
   if (form.matches("#employee-form") || form.matches("#task-form")) {
     let hasErrors = false;
+
+    // Validate required fields
     const inputs = form.querySelectorAll(
       "input[required], select[required], textarea[required]"
     );
-
     inputs.forEach((input) => {
       if (!input.value.trim()) {
         hasErrors = true;
         input.style.borderColor = "red";
-        // Create error message if not exists
+
         if (
           !input.nextElementSibling ||
           !input.nextElementSibling.classList.contains("error-message")
@@ -31,7 +58,6 @@ document.addEventListener("submit", (e) => {
         }
       } else {
         input.style.borderColor = "";
-        // Remove error message if exists
         if (
           input.nextElementSibling &&
           input.nextElementSibling.classList.contains("error-message")
@@ -43,7 +69,7 @@ document.addEventListener("submit", (e) => {
 
     // Email validation
     const emailInput = form.querySelector('input[type="email"]');
-    if (emailInput && emailInput.value) {
+    if (emailInput && emailInput.value.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(emailInput.value)) {
         hasErrors = true;

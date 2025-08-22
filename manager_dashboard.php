@@ -61,7 +61,7 @@ if ($mysqli->query("SHOW TABLES LIKE 'teams'")->num_rows > 0) {
     </thead>
     <tbody>
       <?php
-      $q = $mysqli->query("SELECT title, status, start_date, due_date
+      $q = $mysqli->query("SELECT title, status, start_date, due_date 
                            FROM tasks WHERE created_by=$uid ORDER BY created_at DESC");
       while ($r = $q->fetch_assoc()): ?>
         <tr>
@@ -71,56 +71,6 @@ if ($mysqli->query("SHOW TABLES LIKE 'teams'")->num_rows > 0) {
           <td><?php echo esc($r['due_date']); ?></td>
         </tr>
       <?php endwhile; ?>
-    </tbody>
-  </table>
-  
-  <h2 style="margin-top: 2rem;">Assigned Tasks</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Task Title</th>
-        <th>Employee</th>
-        <th>Status</th>
-        <th>Assigned By</th>
-        <th>Assigned At</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      $assignedTasks = $mysqli->query("
-        SELECT
-          t.title as task_title,
-          u.full_name as employee_name,
-          t.status,
-          assigner.full_name as assigned_by_name,
-          ta.assigned_at
-        FROM task_assignments ta
-        JOIN tasks t ON t.id = ta.task_id
-        JOIN users u ON u.id = ta.user_id
-        JOIN users assigner ON assigner.id = ta.assigned_by
-        WHERE ta.assigned_by = $uid
-        ORDER BY ta.assigned_at DESC
-      ");
-      
-      if ($assignedTasks->num_rows > 0):
-        while ($task = $assignedTasks->fetch_assoc()): ?>
-          <tr>
-            <td><?php echo esc($task['task_title']); ?></td>
-            <td><?php echo esc($task['employee_name']); ?></td>
-            <td>
-              <span class="status st-<?php echo str_replace(' ', '-', strtolower($task['status'])); ?>">
-                <?php echo esc($task['status']); ?>
-              </span>
-            </td>
-            <td><?php echo esc($task['assigned_by_name']); ?></td>
-            <td><?php echo esc($task['assigned_at']); ?></td>
-          </tr>
-        <?php endwhile;
-      else: ?>
-        <tr>
-          <td colspan="5">No tasks assigned yet.</td>
-        </tr>
-      <?php endif; ?>
     </tbody>
   </table>
 </div>

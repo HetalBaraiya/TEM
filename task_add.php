@@ -24,26 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Start date cannot be after due date.';
     }
     
-    // Check for unique task title
-    if (!$errors) {
-        $stmt = $mysqli->prepare("SELECT id FROM tasks WHERE title = ?");
-        $stmt->bind_param("s", $title);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $errors[] = 'A task with this title already exists.';
-        }
-        $stmt->close();
-    }
-    
     if (!$errors) {
         $created_by = (int)$_SESSION['user']['id'];
         $stmt = $mysqli->prepare("INSERT INTO tasks(title,description,start_date,due_date,status,created_by) VALUES(?,?,?,?,?,?)");
         $stmt->bind_param("sssssi", $title,$description,$start_date,$due_date,$status,$created_by);
         $stmt->execute();
-        
-        // If we want to notify someone about new task creation, we can add it here
-        // For now, we'll just redirect
         
         header("Location: tasks.php");
         exit;
@@ -64,7 +49,7 @@ include __DIR__ . '/partials/header.php';
     </div>
   <?php endif; ?>
   
-  <form id="task-form" method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
+  <form method="post" class="form card" style="max-width:800px;margin:auto;padding:2rem;">
     <div class="form-row">
       <label>Title</label>
       <input name="title" required value="<?php echo esc($_POST['title'] ?? ''); ?>">
